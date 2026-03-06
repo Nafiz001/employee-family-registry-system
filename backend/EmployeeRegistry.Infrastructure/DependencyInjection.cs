@@ -14,26 +14,63 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection") 
             ?? throw new InvalidOperationException("Database connection string 'DefaultConnection' is missing.");
 
-        // If deploying to cloud (Supabase), ensure SSL is required
-        if (!connectionString.Contains("Host=localhost", StringComparison.OrdinalIgnoreCase))
-        {
-            bool isUri = connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) || 
-                         connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase);
+        // Safeguard: Remove any literal quotes that might be passed from some environment variable managers
+        connectionString = connectionString.Trim('\"', ' ');
 
-            if (isUri)
+        // If it starts with postgres:// or postgresql://, convert URI to standard ADO.NET connection string
+        if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) || 
+            connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        {
+            try
             {
-                if (!connectionString.Contains("sslmode=", StringComparison.OrdinalIgnoreCase))
+                var uri = new Uri(connectionString);
+                var userInfo = uri.UserInfo.Split(':');
+                var username = userInfo[0];
+                var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+                var host = uri.Host;
+                var port = uri.Port > 0 ? uri.Port : 5432;
+                var database = uri.LocalPath.TrimStart('/');
+
+                var builder = new Npgsql.NpgsqlConnectionStringBuilder
                 {
-                    var separator = connectionString.Contains("?") ? "&" : "?";
-                    connectionString += $"{separator}sslmode=require";
+                    Host = host,
+                    Port = port,
+                    Username = username,
+                    Password = password,
+                    Database = database,
+                    SslMode = Npgsql.SslMode.Require,
+                    TrustServerCertificate = true,
+                    // Pool settings for better production resilience
+                    Pooling = true,
+                    KeepAlive = 30
+                };
+
+                // Carry over any existing query parameters from the URI (like pgbouncer=true)
+                if (!string.IsNullOrEmpty(uri.Query))
+                {
+                    var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                    foreach (string key in queryParams)
+                    {
+                        if (string.IsNullOrWhiteSpace(key)) continue;
+                        if (key.Equals("sslmode", StringComparison.OrdinalIgnoreCase)) continue;
+                        builder[key] = queryParams[key];
+                    }
                 }
+
+                connectionString = builder.ToString();
             }
-            else
+            catch (Exception ex)
             {
-                if (!connectionString.Contains("SSL Mode=", StringComparison.OrdinalIgnoreCase))
-                {
-                    connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
-                }
+                // Fallback to original string if URI parsing fails, but log it
+                Console.WriteLine($"Warning: Failed to parse connection string as URI: {ex.Message}");
+            }
+        }
+        else if (!connectionString.Contains("Host=localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            // For standard Key-Value strings, ensure SSL is active for cloud
+            if (!connectionString.Contains("SSL Mode=", StringComparison.OrdinalIgnoreCase))
+            {
+                connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
             }
         }
 
