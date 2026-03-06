@@ -39,6 +39,10 @@ public static class DependencyInjection
                     Password = password,
                     Database = database,
                     SslMode = Npgsql.SslMode.Require,
+                    TrustServerCertificate = true,
+                    // Connection timeouts for better reliability
+                    Timeout = 30,
+                    CommandTimeout = 300, // 5 minutes for migrations
                     // Pool settings for better production resilience
                     Pooling = true,
                     KeepAlive = 30
@@ -83,7 +87,11 @@ public static class DependencyInjection
         }
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString, npgsqlOptions => 
+            {
+                npgsqlOptions.CommandTimeout(300); // 5 minutes for EF Core operations
+                npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            }));
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
