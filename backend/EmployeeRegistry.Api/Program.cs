@@ -123,7 +123,14 @@ var migrationTask = Task.Run(async () =>
         {
             logger.LogInformation("Background: Starting database migration...");
             var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
-            await context.Database.MigrateAsync();
+            if (context.Database.IsRelational())
+            {
+                await context.Database.MigrateAsync();
+            }
+            else
+            {
+                await context.Database.EnsureCreatedAsync();
+            }
             logger.LogInformation("Background: Database migration completed. Starting seeding...");
             await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
             logger.LogInformation("Background: Database seeding completed successfully.");

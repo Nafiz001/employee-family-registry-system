@@ -20,9 +20,14 @@ public class AuthControllerTests : IClassFixture<WebApplicationFactory<Program>>
         {
             builder.ConfigureServices(services =>
             {
-                // Remove the real DbContext
-                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-                if (descriptor != null) services.Remove(descriptor);
+                var descriptors = services.Where(d =>
+                    d.ServiceType.Name.Contains("DbContextOptions") || 
+                    d.ServiceType == typeof(System.Data.Common.DbConnection)).ToList();
+                    
+                foreach (var d in descriptors)
+                {
+                    services.Remove(d);
+                }
 
                 // Add In-Memory DbContext for testing
                 services.AddDbContext<ApplicationDbContext>(options =>
