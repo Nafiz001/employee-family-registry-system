@@ -25,7 +25,7 @@ public class EmployeeValidatorTests
     {
         // Arrange
         var dto = new CreateEmployeeDto { NID = nid, Name = "Test", Phone = "01712345678", Department = "IT", BasicSalary = 1000 };
-        _repositoryMock.Setup(x => x.NidExistsAsync(nid)).ReturnsAsync(false);
+        _repositoryMock.Setup(x => x.NidExistsAsync(nid, null)).ReturnsAsync(false);
 
         // Act
         var result = await _validator.ValidateAsync(dto);
@@ -59,7 +59,7 @@ public class EmployeeValidatorTests
     {
         // Arrange
         var dto = new CreateEmployeeDto { NID = "1234567890", Name = "Test", Phone = phone, Department = "IT", BasicSalary = 1000 };
-        _repositoryMock.Setup(x => x.NidExistsAsync(dto.NID)).ReturnsAsync(false);
+        _repositoryMock.Setup(x => x.NidExistsAsync(dto.NID, null)).ReturnsAsync(false);
 
         // Act
         var result = await _validator.ValidateAsync(dto);
