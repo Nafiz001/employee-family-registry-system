@@ -112,19 +112,42 @@ app.MapControllers();
 // Add a simple health check or root endpoint to prevent 404s when visiting the raw Render URL
 app.MapGet("/", () => "Employee Registry API is running smoothly!");
 
+// Debug endpoint to manually trigger migrations and see errors
+app.MapGet("/api/debug/migrate", async (EmployeeRegistry.Infrastructure.Data.ApplicationDbContext context) => 
+{
+    try 
+    {
+        await context.Database.MigrateAsync();
+        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
+        return Results.Ok("Migration and Seeding successful!");
+    }
+    catch (Exception ex)
+    {
+        return Results.InternalServerError(new { 
+            Message = "Migration failed", 
+            Error = ex.Message, 
+            Inner = ex.InnerException?.Message,
+            Stack = ex.StackTrace 
+        });
+    }
+});
+
 // Apply migrations and seed data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
     try
     {
+        logger.LogInformation("Starting database migration...");
         var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
         context.Database.Migrate();
+        logger.LogInformation("Database migration completed. Starting seeding...");
         await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
+        logger.LogInformation("Database seeding completed successfully.");
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred during database migration or seeding.");
     }
 }
