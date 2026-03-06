@@ -7,9 +7,6 @@ public static class DataSeeder
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        if (await context.Employees.AnyAsync())
-            return;
-
         // Seed default admin user
         if (!await context.Users.AnyAsync())
         {
@@ -27,7 +24,12 @@ public static class DataSeeder
                     Role = UserRole.Viewer
                 }
             );
+
+            await context.SaveChangesAsync();
         }
+
+        if (await context.Employees.AnyAsync())
+            return;
 
         var employees = new List<Employee>
         {
