@@ -23,7 +23,10 @@ A production-quality full-stack application for managing employee and family det
 ### Backend Setup
 1. Open the project folder in terminal.
 2. Update the `ConnectionStrings:DefaultConnection` correctly in `backend/EmployeeRegistry.Api/appsettings.json` with your real PostgreSQL credentials.
-3. Apply standard EF migrations (or the app will automatically try to create and seed them upon normal startup).
+3. **Run Migrations**: The application can auto-seed on startup, but you can explicitly apply migrations to your PostgreSQL database using EF Core tools:
+   ```bash
+   dotnet ef database update --project backend/EmployeeRegistry.Infrastructure --startup-project backend/EmployeeRegistry.Api
+   ```
    ```bash
    dotnet build backend/EmployeeRegistry.sln
    dotnet run --project backend/EmployeeRegistry.Api

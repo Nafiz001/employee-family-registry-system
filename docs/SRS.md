@@ -1,7 +1,12 @@
 # Software Requirements Specification (SRS)
 
-## 1. Introduction
-The **Employee & Family Registry System** is a business application designed to manage employee details along with their spouses and children. It facilitates CRUD operations, fast searches, secure access, and data export features.
+## 1. Introduction & System Scope
+The **Employee & Family Registry System** is a business application designed to manage employee profiles along with their immediate family details (spouses and children). It facilitates CRUD operations, fast searches, secure access, and PDF data export features.
+
+**Explicit Scope Exclusions (What this system does NOT do):**
+- It does NOT handle payroll processing or tax calculations.
+- It does NOT track employee attendance, timesheets, or leave management.
+- It does NOT support multi-tenant organizational structures.
 
 ## 2. System Architecture
 The software consists of two main decoupled components:
@@ -66,3 +71,10 @@ erDiagram
 4.  **Security**: Hashes passwords using BCrypt. Validates API endpoints via `[Authorize(Roles="Admin")]`.
 5.  **Data Consistency**: Entity Framework enforces `Cascade Delete` behavior. Deleting an Employee automatically deletes their associated Spouse and Children from PostgreSQL to prevent orphaned records.
 6.  **Export to PDF**: The system automatically generates neat, tabular PDFs. Individual CV generation outputs a structured, professional dossier containing family relationships.
+
+## 6. Assumptions
+Throughout the development of this system, the following logic and constraints were assumed:
+1.  **Monogamy Constraint**: An employee can only have one spouse registered in the system at any given time (One-to-One relationship).
+2.  **Global Identity Uniqueness**: The Bangladeshi NID must be unique continuously across the entire database. An employee and a spouse cannot share the same NID, nor can two spouses.
+3.  **Salary Representation**: "Basic Salary" is assumed to be a fixed, non-negative decimal value representing monthly pay in BDT.
+4.  **Date of Birth Boundaries**: Children must logically have a Date of Birth in the past. Future dates are blocked.
