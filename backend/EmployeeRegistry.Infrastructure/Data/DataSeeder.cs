@@ -41,8 +41,8 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Fatema Begum", NID = "1991234567890" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Ahnaf Islam", DateOfBirth = new DateTime(2015, 3, 12) },
-                    new() { Name = "Anika Islam", DateOfBirth = new DateTime(2018, 7, 25) }
+                    new() { Name = "Ahnaf Islam", DateOfBirth = new DateTime(2015, 3, 12, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Anika Islam", DateOfBirth = new DateTime(2018, 7, 25, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -55,7 +55,7 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Kamal Hossain", NID = "1984567890123" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Tanvir Hossain", DateOfBirth = new DateTime(2012, 11, 5) }
+                    new() { Name = "Tanvir Hossain", DateOfBirth = new DateTime(2012, 11, 5, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -68,9 +68,9 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Nasreen Sultana", NID = "19890123456789012" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Farhan Chowdhury", DateOfBirth = new DateTime(2010, 1, 20) },
-                    new() { Name = "Faria Chowdhury", DateOfBirth = new DateTime(2013, 6, 15) },
-                    new() { Name = "Fahim Chowdhury", DateOfBirth = new DateTime(2017, 9, 8) }
+                    new() { Name = "Farhan Chowdhury", DateOfBirth = new DateTime(2010, 1, 20, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Faria Chowdhury", DateOfBirth = new DateTime(2013, 6, 15, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Fahim Chowdhury", DateOfBirth = new DateTime(2017, 9, 8, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -83,7 +83,7 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Jahangir Alam", NID = "1990987654321" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Raiyan Alam", DateOfBirth = new DateTime(2019, 4, 30) }
+                    new() { Name = "Raiyan Alam", DateOfBirth = new DateTime(2019, 4, 30, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -96,8 +96,8 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Ayesha Siddiqua", NID = "1989012345678" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Sakib Shahin", DateOfBirth = new DateTime(2016, 8, 14) },
-                    new() { Name = "Sadia Shahin", DateOfBirth = new DateTime(2020, 2, 28) }
+                    new() { Name = "Sakib Shahin", DateOfBirth = new DateTime(2016, 8, 14, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Sadia Shahin", DateOfBirth = new DateTime(2020, 2, 28, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -110,7 +110,7 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Mizanur Rahman", NID = "19920123456789012" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Nabil Rahman", DateOfBirth = new DateTime(2017, 12, 3) }
+                    new() { Name = "Nabil Rahman", DateOfBirth = new DateTime(2017, 12, 3, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -123,8 +123,8 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Monira Begum", NID = "1988654321098" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Tasnim Karim", DateOfBirth = new DateTime(2011, 5, 18) },
-                    new() { Name = "Tahsin Karim", DateOfBirth = new DateTime(2014, 10, 7) }
+                    new() { Name = "Tasnim Karim", DateOfBirth = new DateTime(2011, 5, 18, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Tahsin Karim", DateOfBirth = new DateTime(2014, 10, 7, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -137,7 +137,7 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Shafiqul Islam", NID = "1993012345678" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Arham Islam", DateOfBirth = new DateTime(2021, 1, 15) }
+                    new() { Name = "Arham Islam", DateOfBirth = new DateTime(2021, 1, 15, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -150,8 +150,8 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Ruma Akter", NID = "19891234567890123" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Adyan Ahmed", DateOfBirth = new DateTime(2013, 3, 22) },
-                    new() { Name = "Ayaan Ahmed", DateOfBirth = new DateTime(2016, 11, 9) }
+                    new() { Name = "Adyan Ahmed", DateOfBirth = new DateTime(2013, 3, 22, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Ayaan Ahmed", DateOfBirth = new DateTime(2016, 11, 9, 0, 0, 0, DateTimeKind.Utc) }
                 }
             },
             new()
@@ -164,8 +164,8 @@ public static class DataSeeder
                 Spouse = new Spouse { Name = "Nurul Haque", NID = "1989876543210" },
                 Children = new List<Child>
                 {
-                    new() { Name = "Faiyaz Haque", DateOfBirth = new DateTime(2015, 7, 1) },
-                    new() { Name = "Fariha Haque", DateOfBirth = new DateTime(2019, 9, 19) }
+                    new() { Name = "Faiyaz Haque", DateOfBirth = new DateTime(2015, 7, 1, 0, 0, 0, DateTimeKind.Utc) },
+                    new() { Name = "Fariha Haque", DateOfBirth = new DateTime(2019, 9, 19, 0, 0, 0, DateTimeKind.Utc) }
                 }
             }
         };
