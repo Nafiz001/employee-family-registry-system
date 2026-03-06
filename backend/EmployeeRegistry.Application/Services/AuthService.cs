@@ -58,9 +58,12 @@ public class AuthService : IAuthService
     private AuthResponseDto GenerateToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+        var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is missing from configuration.");
+        var expirationMinutes = jwtSettings["ExpirationInMinutes"] ?? "60";
+        
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiration = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpirationInMinutes"]!));
+        var expiration = DateTime.UtcNow.AddMinutes(int.Parse(expirationMinutes));
 
         var claims = new[]
         {

@@ -37,7 +37,7 @@ Render offers native Docker support which makes deploying our .NET 8 backend tri
 5. **Environment Variables**: Add the following critical keys:
    * `ASPNETCORE_ENVIRONMENT` = `Production`
    * `ConnectionStrings__DefaultConnection` = *(Paste your Supabase Connection String here)*
-   * `JwtSettings__Secret` = *(Create a random 32+ character string securely)*
+   * `JwtSettings__SecretKey` = *(Create a random 32+ character string securely)*
    * `JwtSettings__Issuer` = `EmployeeRegistryClient`
    * `JwtSettings__Audience` = `EmployeeRegistryApi`
 6. Click **Create Web Service**. 
