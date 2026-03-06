@@ -113,22 +113,21 @@ app.MapControllers();
 app.MapGet("/", () => "Employee Registry API is running smoothly!");
 
 // Debug endpoint to manually trigger migrations and see errors
-app.MapGet("/api/debug/migrate", async (EmployeeRegistry.Infrastructure.Data.ApplicationDbContext context) => 
+app.MapGet("/api/debug/migrate", async (EmployeeRegistry.Infrastructure.Data.ApplicationDbContext db) => 
 {
     try 
     {
-        await context.Database.MigrateAsync();
-        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
+        await db.Database.MigrateAsync();
+        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(db);
         return Results.Ok("Migration and Seeding successful!");
     }
     catch (Exception ex)
     {
-        return Results.InternalServerError(new { 
-            Message = "Migration failed", 
-            Error = ex.Message, 
-            Inner = ex.InnerException?.Message,
-            Stack = ex.StackTrace 
-        });
+        return Results.Problem(
+            detail: $"{ex.Message} | Inner: {ex.InnerException?.Message} | Stack: {ex.StackTrace}",
+            statusCode: 500,
+            title: "Migration Error"
+        );
     }
 });
 
