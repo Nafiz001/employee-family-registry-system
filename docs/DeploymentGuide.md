@@ -14,9 +14,10 @@ Supabase provides a powerful managed PostgreSQL database.
 
 1. Go to [Supabase](https://supabase.com/) and create a new account/project.
 2. In your new Project, navigate to **Project Settings -> Database**.
-3. Locate the **Connection String** (URI format) which will look something like:
+3. Locate the **Connection String** (Transaction Pooler / Session mode is recommended for IPv4 support).
+4. Use the URI format which will look like:
    `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
-4. Save this connection string securely. Replace `[password]` with the actual password you set during project creation.
+   *Note: Using port 6543 (Transaction Pooler) is highly recommended for Render as it provides an IPv4 address, whereas port 5432 often resolves to IPv6 which Render may block.*
 
 **Note on Migrations**:
 When the backend successfully deploys to Render and boots up for the first time, our `Program.cs` logic will automatically run `context.Database.MigrateAsync()` and execute the `DataSeeder.cs`, creating all your tables and demo users in Supabase instantly.

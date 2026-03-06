@@ -40,6 +40,8 @@ public static class DependencyInjection
                     Database = database,
                     SslMode = Npgsql.SslMode.Require,
                     TrustServerCertificate = true,
+                    // Force IPv4 because Render often has trouble with IPv6 to Supabase
+                    PreferIpv4 = true,
                     // Pool settings for better production resilience
                     Pooling = true,
                     KeepAlive = 30
