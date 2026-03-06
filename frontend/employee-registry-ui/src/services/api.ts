@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://localhost:7196/api', // HTTPS port from launchSettings.json usually, or we can use generic 5001/5000. Let's assume standard ASP.NET dev port or we will configure via env
+    baseURL: import.meta.env.VITE_API_URL || '/api', // Use env var if present, or rely on Nginx proxy at /api
     headers: {
         'Content-Type': 'application/json',
     },

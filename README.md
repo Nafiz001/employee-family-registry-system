@@ -46,7 +46,18 @@ A production-quality full-stack application for managing employee and family det
    ```bash
    npm run dev
    ```
-4. Open your browser and navigate to the localhost url printed (usually `http://localhost:5173`).
+### Docker Setup (Easiest)
+You can build and run the entire application stack in a single command using Docker Compose:
+1. Ensure Docker Desktop is installed and running.
+2. Open a terminal in the root project folder containing `docker-compose.yml`.
+3. Run the following command:
+   ```bash
+   docker-compose up --build
+   ```
+4. Access the applications:
+   - **Frontend UI**: `http://localhost:3000`
+   - **Backend API**: `http://localhost:8080/api` (Swagger at `http://localhost:8080/swagger`)
+   - **PostgreSQL**: `localhost:5432`
 
 ---
 
