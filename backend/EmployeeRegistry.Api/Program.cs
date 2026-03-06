@@ -112,25 +112,6 @@ app.MapControllers();
 // Add a simple health check or root endpoint to prevent 404s when visiting the raw Render URL
 app.MapGet("/", () => "Employee Registry API is running smoothly!");
 
-// Debug endpoint to manually trigger migrations and see errors
-app.MapGet("/api/debug/migrate", async (EmployeeRegistry.Infrastructure.Data.ApplicationDbContext db) => 
-{
-    try 
-    {
-        await db.Database.MigrateAsync();
-        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(db);
-        return Results.Ok("Migration and Seeding successful!");
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(
-            detail: $"{ex.Message} | Inner: {ex.InnerException?.Message} | Stack: {ex.StackTrace}",
-            statusCode: 500,
-            title: "Migration Error"
-        );
-    }
-});
-
 // Apply migrations and seed data in the background to avoid blocking Render port binding
 var migrationTask = Task.Run(async () => 
 {
