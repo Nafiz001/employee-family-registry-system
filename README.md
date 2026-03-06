@@ -56,7 +56,7 @@ You can build and run the entire application stack in a single command using Doc
    ```
 4. Access the applications:
    - **Frontend UI**: `http://localhost:3000`
-   - **Backend API**: `http://localhost:8080/api` (Swagger at `http://localhost:8080/swagger`)
+   - **Backend API**: `http://localhost:8081/api` (Swagger at `http://localhost:8081/swagger`)
    - **PostgreSQL**: `localhost:5432`
 
 ---
