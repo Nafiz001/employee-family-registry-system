@@ -131,24 +131,27 @@ app.MapGet("/api/debug/migrate", async (EmployeeRegistry.Infrastructure.Data.App
     }
 });
 
-// Apply migrations and seed data
-using (var scope = app.Services.CreateScope())
+// Apply migrations and seed data in the background to avoid blocking Render port binding
+var migrationTask = Task.Run(async () => 
 {
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    try
+    using (var scope = app.Services.CreateScope())
     {
-        logger.LogInformation("Starting database migration...");
-        var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
-        context.Database.Migrate();
-        logger.LogInformation("Database migration completed. Starting seeding...");
-        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
-        logger.LogInformation("Database seeding completed successfully.");
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        try
+        {
+            logger.LogInformation("Background: Starting database migration...");
+            var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Background: Database migration completed. Starting seeding...");
+            await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
+            logger.LogInformation("Background: Database seeding completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Background: An error occurred during database migration or seeding.");
+        }
     }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "An error occurred during database migration or seeding.");
-    }
-}
+});
 
 app.Run();
