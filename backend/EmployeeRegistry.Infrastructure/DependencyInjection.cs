@@ -17,8 +17,24 @@ public static class DependencyInjection
         // If deploying to cloud (Supabase), ensure SSL is required
         if (!connectionString.Contains("Host=localhost", StringComparison.OrdinalIgnoreCase))
         {
-            if (!connectionString.Contains("SSL Mode=", StringComparison.OrdinalIgnoreCase))
-                connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
+            bool isUri = connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) || 
+                         connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase);
+
+            if (isUri)
+            {
+                if (!connectionString.Contains("sslmode=", StringComparison.OrdinalIgnoreCase))
+                {
+                    var separator = connectionString.Contains("?") ? "&" : "?";
+                    connectionString += $"{separator}sslmode=require";
+                }
+            }
+            else
+            {
+                if (!connectionString.Contains("SSL Mode=", StringComparison.OrdinalIgnoreCase))
+                {
+                    connectionString += ";SSL Mode=Require;Trust Server Certificate=true";
+                }
+            }
         }
 
         services.AddDbContext<ApplicationDbContext>(options =>
