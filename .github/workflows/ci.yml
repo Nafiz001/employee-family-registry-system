@@ -1,0 +1,45 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore backend/EmployeeRegistry.sln
+
+      - name: Build
+        run: dotnet build backend/EmployeeRegistry.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test backend/EmployeeRegistry.sln --no-build --configuration Release --verbosity normal
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: cd frontend/employee-registry-ui && npm install --legacy-peer-deps
+
+      - name: Build
+        run: cd frontend/employee-registry-ui && npm run build

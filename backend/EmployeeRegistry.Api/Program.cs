@@ -136,3 +136,6 @@ var migrationTask = Task.Run(async () =>
 });
 
 app.Run();
+
+// Add this for integration tests to access the Program class
+public partial class Program { }
