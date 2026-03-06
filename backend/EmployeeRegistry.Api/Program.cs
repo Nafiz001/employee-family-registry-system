@@ -1,3 +1,5 @@
+using EmployeeRegistry.Api.Middleware;
+using EmployeeRegistry.Application;
 using EmployeeRegistry.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register Application services (Services, Validators)
+builder.Services.AddApplication();
 
 // Register Infrastructure services (DbContext, Repositories)
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -24,6 +29,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
