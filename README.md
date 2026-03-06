@@ -59,8 +59,13 @@ You can build and run the entire application stack in a single command using Doc
    - **Backend API**: `http://localhost:8081/api` (Swagger at `http://localhost:8081/swagger`)
    - **PostgreSQL**: `localhost:5432`
 
-### Cloud Deployment (Vercel, Render, Supabase)
-Please see the dedicated document at `docs/DeploymentGuide.md` for a comprehensive step-by-step tutorial on deploying this application across modern cloud hosting providers.
+## 🌐 Live Deployment
+
+- **Frontend (Vercel):** [https://employee-family-registry-system.vercel.app/](https://employee-family-registry-system.vercel.app/)
+- **Backend (Render):** [https://employee-family-registry-system-1.onrender.com/](https://employee-family-registry-system-1.onrender.com/)
+- **Database (Supabase):** PostgreSQL Managed Instance
+
+Refer to [docs/DeploymentGuide.md](docs/DeploymentGuide.md) for step-by-step instructions.
 
 ---
 
