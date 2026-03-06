@@ -36,7 +36,8 @@ public class ExceptionMiddleware
         {
             StatusCode = context.Response.StatusCode,
             Message = "An internal server error occurred.",
-            Detail = exception.Message
+            Detail = exception.Message,
+            StackTrace = exception.StackTrace // Added for production debugging, will remove once fixed
         };
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

@@ -59,7 +59,8 @@ public class AuthService : IAuthService
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is missing from configuration.");
-        var expirationMinutes = jwtSettings["ExpirationInMinutes"] ?? "60";
+        var expirationMinutes = jwtSettings["ExpirationInMinutes"];
+        if (string.IsNullOrWhiteSpace(expirationMinutes)) expirationMinutes = "60";
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
