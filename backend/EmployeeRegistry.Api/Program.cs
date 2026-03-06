@@ -85,7 +85,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -107,6 +107,9 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Add a simple health check or root endpoint to prevent 404s when visiting the raw Render URL
+app.MapGet("/", () => "Employee Registry API is running smoothly!");
 
 // Apply migrations and seed data
 using (var scope = app.Services.CreateScope())
