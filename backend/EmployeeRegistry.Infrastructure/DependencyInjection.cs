@@ -48,12 +48,21 @@ public static class DependencyInjection
                 // Carry over any existing query parameters from the URI (like pgbouncer=true)
                 if (!string.IsNullOrEmpty(uri.Query))
                 {
-                    var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                    foreach (string key in queryParams)
+                    // Manual query parsing to avoid System.Web dependency
+                    var query = uri.Query.TrimStart('?');
+                    var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var pair in pairs)
                     {
+                        var parts = pair.Split('=');
+                        if (parts.Length != 2) continue;
+                        
+                        var key = parts[0];
+                        var val = Uri.UnescapeDataString(parts[1]);
+                        
                         if (string.IsNullOrWhiteSpace(key)) continue;
                         if (key.Equals("sslmode", StringComparison.OrdinalIgnoreCase)) continue;
-                        builder[key] = queryParams[key];
+                        
+                        builder[key] = val;
                     }
                 }
 
