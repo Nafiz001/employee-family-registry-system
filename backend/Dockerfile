@@ -7,6 +7,8 @@ COPY ["EmployeeRegistry.Api/EmployeeRegistry.Api.csproj", "EmployeeRegistry.Api/
 COPY ["EmployeeRegistry.Application/EmployeeRegistry.Application.csproj", "EmployeeRegistry.Application/"]
 COPY ["EmployeeRegistry.Domain/EmployeeRegistry.Domain.csproj", "EmployeeRegistry.Domain/"]
 COPY ["EmployeeRegistry.Infrastructure/EmployeeRegistry.Infrastructure.csproj", "EmployeeRegistry.Infrastructure/"]
+COPY ["EmployeeRegistry.UnitTests/EmployeeRegistry.UnitTests.csproj", "EmployeeRegistry.UnitTests/"]
+COPY ["EmployeeRegistry.IntegrationTests/EmployeeRegistry.IntegrationTests.csproj", "EmployeeRegistry.IntegrationTests/"]
 RUN dotnet restore "EmployeeRegistry.sln"
 
 # Copy the rest of the source code and build
