@@ -1,0 +1,45 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.vs/
+.vs/
+*.DotSettings.user
+*.csproj.user
+
+# NuGet
+packages/
+*.nupkg
+
+# EF Core
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build
+publish/
+
+# Logs
+*.log
+
+# Assessment files
+*.pdf
+antigravity_prompt.md
