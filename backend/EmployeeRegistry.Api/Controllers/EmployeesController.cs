@@ -1,12 +1,14 @@
 using EmployeeRegistry.Application.DTOs;
 using EmployeeRegistry.Application.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeRegistry.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmployeesController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -50,6 +52,7 @@ public class EmployeesController : ControllerBase
     /// Create a new employee with optional spouse and children
     /// </summary>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<EmployeeDto>> Create([FromBody] CreateEmployeeDto dto)
     {
         var validationResult = await _createValidator.ValidateAsync(dto);
@@ -74,6 +77,7 @@ public class EmployeesController : ControllerBase
     /// Update an existing employee
     /// </summary>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<EmployeeDto>> Update(int id, [FromBody] UpdateEmployeeDto dto)
     {
         var validationResult = await _updateValidator.ValidateAsync(dto);
@@ -101,6 +105,7 @@ public class EmployeesController : ControllerBase
     /// Delete an employee
     /// </summary>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(int id)
     {
         var result = await _employeeService.DeleteAsync(id);
