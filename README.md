@@ -59,6 +59,9 @@ You can build and run the entire application stack in a single command using Doc
    - **Backend API**: `http://localhost:8081/api` (Swagger at `http://localhost:8081/swagger`)
    - **PostgreSQL**: `localhost:5432`
 
+### Cloud Deployment (Vercel, Render, Supabase)
+Please see the dedicated document at `docs/DeploymentGuide.md` for a comprehensive step-by-step tutorial on deploying this application across modern cloud hosting providers.
+
 ---
 
 ## Architectural Notes
