@@ -31,6 +31,14 @@ public static class DependencyInjection
                 var port = uri.Port > 0 ? uri.Port : 5432;
                 var database = uri.LocalPath.TrimStart('/');
 
+                // Port 6543 is Supabase PgBouncer in TRANSACTION mode.
+                // EF Core uses prepared statements across multi-step transactions;
+                // PgBouncer transaction mode does not persist those between connections
+                // and every INSERT/UPDATE/DELETE fails, causing 5x10s retries that
+                // blow past the Axios 30s timeout. Port 5432 on the same pooler host
+                // is SESSION mode — connections are persistent and EF Core works fine.
+                if (port == 6543) port = 5432;
+
                 var builder = new Npgsql.NpgsqlConnectionStringBuilder
                 {
                     Host = host,
@@ -89,8 +97,10 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString, npgsqlOptions => 
             {
-                npgsqlOptions.CommandTimeout(300); // 5 minutes for EF Core operations
-                npgsqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                npgsqlOptions.CommandTimeout(60); // 60 seconds for EF Core operations
+                // Max 3 retries with 3s max delay — keeps total under 30s Axios timeout.
+                // (Old: 5 retries × 10s = 50s, which silently blew past the frontend timeout)
+                npgsqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(3), null);
             }));
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
