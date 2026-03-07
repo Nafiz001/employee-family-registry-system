@@ -118,35 +118,32 @@ app.MapGet("/", () => "Employee Registry API is running smoothly!");
 // Lightweight health-check endpoint — no auth, no DB — used by the frontend to warm up the Render dyno
 app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-// Apply migrations and seed data in the background to avoid blocking Render port binding
-var migrationTask = Task.Run(async () => 
+// Apply migrations and seed data before starting the app
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
     {
-        var services = scope.ServiceProvider;
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        try
+        logger.LogInformation("Starting database migration...");
+        var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
+        if (context.Database.IsRelational())
         {
-            logger.LogInformation("Background: Starting database migration...");
-            var context = services.GetRequiredService<EmployeeRegistry.Infrastructure.Data.ApplicationDbContext>();
-            if (context.Database.IsRelational())
-            {
-                await context.Database.MigrateAsync();
-            }
-            else
-            {
-                await context.Database.EnsureCreatedAsync();
-            }
-            logger.LogInformation("Background: Database migration completed. Starting seeding...");
-            await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
-            logger.LogInformation("Background: Database seeding completed successfully.");
+            await context.Database.MigrateAsync();
         }
-        catch (Exception ex)
+        else
         {
-            logger.LogError(ex, "Background: An error occurred during database migration or seeding.");
+            await context.Database.EnsureCreatedAsync();
         }
+        logger.LogInformation("Database migration completed. Starting seeding...");
+        await EmployeeRegistry.Infrastructure.Data.DataSeeder.SeedAsync(context);
+        logger.LogInformation("Database seeding completed successfully.");
     }
-});
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred during database migration or seeding.");
+    }
+}
 
 app.Run();
 

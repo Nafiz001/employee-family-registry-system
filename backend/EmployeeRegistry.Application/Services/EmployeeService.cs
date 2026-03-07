@@ -51,7 +51,7 @@ public class EmployeeService : IEmployeeService
             Children = dto.Children.Select(c => new Child
             {
                 Name = c.Name,
-                DateOfBirth = c.DateOfBirth
+                DateOfBirth = DateTime.SpecifyKind(c.DateOfBirth, DateTimeKind.Utc)
             }).ToList()
         };
 
@@ -99,7 +99,7 @@ public class EmployeeService : IEmployeeService
             existing.Children.Add(new Child
             {
                 Name = childDto.Name,
-                DateOfBirth = childDto.DateOfBirth
+                DateOfBirth = DateTime.SpecifyKind(childDto.DateOfBirth, DateTimeKind.Utc)
             });
         }
 

@@ -50,7 +50,22 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<Employee> UpdateAsync(Employee employee)
     {
-        _context.Employees.Update(employee);
+        // Remove orphaned children that were cleared from the collection by the service layer.
+        // EF Core tracks all loaded Children; any that are no longer in the collection need
+        // to be explicitly deleted because the FK is non-nullable (cascade orphan removal).
+        var orphanedChildren = _context.Children
+            .Local
+            .Where(c => c.EmployeeId == employee.Id && !employee.Children.Contains(c))
+            .ToList();
+        _context.Children.RemoveRange(orphanedChildren);
+
+        // Remove orphaned spouse if it was set to null by the service layer.
+        var orphanedSpouse = _context.Spouses
+            .Local
+            .FirstOrDefault(s => s.EmployeeId == employee.Id && employee.Spouse == null);
+        if (orphanedSpouse != null)
+            _context.Spouses.Remove(orphanedSpouse);
+
         await _context.SaveChangesAsync();
         return employee;
     }
