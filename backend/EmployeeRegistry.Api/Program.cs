@@ -103,7 +103,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// UseHttpsRedirection is intentionally omitted.
+// On Render (and most reverse-proxy hosts), TLS is terminated at the edge and the
+// app receives plain HTTP internally. Enabling this middleware would issue 307 redirects
+// on every request, breaking POST/PUT/DELETE calls (body is not resent after redirect).
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
