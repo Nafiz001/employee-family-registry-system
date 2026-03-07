@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, User, Lock, Eye, EyeOff, LogIn, Shield, Cloud } from 'lucide-react';
@@ -10,9 +10,25 @@ export const Login: React.FC = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [serverStatus, setServerStatus] = useState<'warming' | 'ready' | null>(null);
 
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    // Ping the backend as soon as the login page mounts (fires on first visit AND after every logout).
+    // This wakes up the Render free-tier dyno so it's warm by the time the user hits Sign In.
+    useEffect(() => {
+        let warmingTimer: ReturnType<typeof setTimeout>;
+        warmingTimer = setTimeout(() => setServerStatus('warming'), 2000);
+
+        api.get('/health')
+            .finally(() => {
+                clearTimeout(warmingTimer);
+                setServerStatus('ready');
+            });
+
+        return () => clearTimeout(warmingTimer);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -77,6 +93,15 @@ export const Login: React.FC = () => {
                         </div>
 
                         <form className="space-y-5" onSubmit={handleSubmit}>
+                            {serverStatus === 'warming' && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+                                    <svg className="animate-spin h-4 w-4 text-amber-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <p className="text-sm text-amber-700">Server is starting up, this may take a moment…</p>
+                                </div>
+                            )}
                             {error && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                                     <p className="text-sm text-red-700">{error}</p>

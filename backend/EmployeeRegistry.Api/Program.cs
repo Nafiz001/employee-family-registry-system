@@ -112,6 +112,9 @@ app.MapControllers();
 // Add a simple health check or root endpoint to prevent 404s when visiting the raw Render URL
 app.MapGet("/", () => "Employee Registry API is running smoothly!");
 
+// Lightweight health-check endpoint — no auth, no DB — used by the frontend to warm up the Render dyno
+app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
 // Apply migrations and seed data in the background to avoid blocking Render port binding
 var migrationTask = Task.Run(async () => 
 {
