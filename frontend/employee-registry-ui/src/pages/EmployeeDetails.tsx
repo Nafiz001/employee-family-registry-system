@@ -69,7 +69,7 @@ export const EmployeeDetails: React.FC = () => {
         doc.setTextColor(...white);
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
-        doc.text(`৳ ${employee.basicSalary.toLocaleString()} / month`, pageW - 14, 20, { align: 'right' });
+        doc.text(`BDT ${employee.basicSalary.toLocaleString('en-US')} / month`, pageW - 14, 20, { align: 'right' });
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.text('Basic Salary', pageW - 14, 27, { align: 'right' });
