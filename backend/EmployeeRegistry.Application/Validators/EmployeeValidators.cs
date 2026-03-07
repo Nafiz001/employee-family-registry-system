@@ -52,7 +52,7 @@ public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeDto>
 
 public class UpdateEmployeeValidator : AbstractValidator<UpdateEmployeeDto>
 {
-    public UpdateEmployeeValidator()
+    public UpdateEmployeeValidator(IEmployeeRepository repository)
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")

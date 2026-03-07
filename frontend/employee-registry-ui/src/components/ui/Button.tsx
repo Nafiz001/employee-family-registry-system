@@ -7,19 +7,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ children, variant = 'primary', isLoading, className = '', disabled, ...props }, ref) => {
-        const baseStyles = "inline-flex items-center justify-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors";
+        const baseStyles = "inline-flex items-center justify-center px-4 py-2.5 border text-sm font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors";
 
         const variants = {
-            primary: "border-transparent text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500",
-            secondary: "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500",
-            danger: "border-transparent text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
+            primary: "border-transparent text-white bg-primary hover:bg-primary/90 focus:ring-primary/50 shadow-sm",
+            secondary: "border-slate-200 text-slate-700 bg-white hover:bg-slate-50 focus:ring-primary/30",
+            danger: "border-transparent text-white bg-rose-600 hover:bg-rose-700 focus:ring-rose-500"
         };
 
         return (
             <button
                 ref={ref}
                 disabled={disabled || isLoading}
-                className={`${baseStyles} ${variants[variant]} ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+                className={`${baseStyles} ${variants[variant]} ${disabled || isLoading ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}
                 {...props}
             >
                 {isLoading && (

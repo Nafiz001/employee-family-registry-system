@@ -4,7 +4,7 @@ A production-quality full-stack application for managing employee and family det
 
 ## Features
 
-- **Decoupled Architecture**: .NET 8 Web API backend + React 19 (TypeScript/Vite) frontend.
+- **Decoupled Architecture**: .NET 10 Web API backend + React 19 (TypeScript/Vite) frontend.
 - **Relational Database**: PostgreSQL supported via Entity Framework Core.
 - **Authentication**: JWT authentication with BCrypt password hashing.
 - **Role-Based Access Control**: `Admin` (Full CRUD) vs `Viewer` (Read-only).
@@ -13,10 +13,155 @@ A production-quality full-stack application for managing employee and family det
 - **Reporting**: Export the current Employee List view to PDF, or export a detailed CV of a specific employee (including spouse and children's dates of births).
 - **Responsive UI**: Tailwind CSS styled components.
 
+---
+
+## Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph Client["Frontend (React 19 + Vite)"]
+        UI["Pages\n(Login / EmployeeList\n/ EmployeeDetails / EmployeeForm)"]
+        CTX["AuthContext\n(JWT + Role State)"]
+        SVC["api.ts\n(Axios Instance)"]
+        UI <--> CTX
+        UI --> SVC
+    end
+
+    subgraph Gateway["API Layer (.NET 10)"]
+        MW["ExceptionMiddleware\n(Global Error Handler)"]
+        AUTH["AuthController\n(POST /auth/login)"]
+        EMP["EmployeesController\n(CRUD /employees)"]
+        MW --> AUTH
+        MW --> EMP
+    end
+
+    subgraph App["Application Layer"]
+        ASVC["AuthService"]
+        ESVC["EmployeeService"]
+        VAL["FluentValidation\n(NID / Phone / Salary)"]
+        ESVC --> VAL
+    end
+
+    subgraph Domain["Domain Layer"]
+        ENT["Entities\n(Employee · Spouse · Child · User)"]
+        IFACE["Interfaces\n(IEmployeeRepository\nIUserRepository)"]
+    end
+
+    subgraph Infra["Infrastructure Layer"]
+        REPO["Repositories\n(EmployeeRepository\nUserRepository)"]
+        DB["ApplicationDbContext\n(EF Core)"]
+        SEED["DataSeeder\n(10 Employees + 2 Users)"]
+        REPO --> DB
+        SEED --> DB
+    end
+
+    subgraph Storage["Data Store"]
+        PG[("PostgreSQL")]
+    end
+
+    SVC -- "HTTP + JWT Bearer" --> MW
+    AUTH --> ASVC
+    EMP --> ESVC
+    ASVC --> IFACE
+    ESVC --> IFACE
+    IFACE --> REPO
+    DB --> PG
+```
+
+---
+
+## Project Structure
+
+```
+employee-family-registry-system/
+├── docker-compose.yml
+├── README.md
+├── docs/
+│   ├── SRS.md
+│   └── DeploymentGuide.md
+│
+├── backend/
+│   ├── EmployeeRegistry.sln
+│   ├── Dockerfile
+│   │
+│   ├── EmployeeRegistry.Api/              # Entry point — Controllers & Middleware
+│   │   ├── Program.cs
+│   │   ├── appsettings.json
+│   │   ├── Controllers/
+│   │   │   ├── AuthController.cs
+│   │   │   └── EmployeesController.cs
+│   │   └── Middleware/
+│   │       └── ExceptionMiddleware.cs
+│   │
+│   ├── EmployeeRegistry.Application/      # Business logic — Services, DTOs, Validation
+│   │   ├── DependencyInjection.cs
+│   │   ├── Services/
+│   │   │   ├── AuthService.cs
+│   │   │   └── EmployeeService.cs
+│   │   ├── DTOs/
+│   │   │   ├── AuthDtos.cs
+│   │   │   ├── EmployeeDtos.cs
+│   │   │   ├── SpouseDtos.cs
+│   │   │   └── ChildDtos.cs
+│   │   └── Validators/
+│   │       └── EmployeeValidators.cs
+│   │
+│   ├── EmployeeRegistry.Domain/           # Core entities & repository interfaces
+│   │   ├── Entities/
+│   │   │   ├── Employee.cs
+│   │   │   ├── Spouse.cs
+│   │   │   ├── Child.cs
+│   │   │   └── User.cs
+│   │   └── Interfaces/
+│   │       ├── IEmployeeRepository.cs
+│   │       └── IUserRepository.cs
+│   │
+│   ├── EmployeeRegistry.Infrastructure/   # EF Core, Migrations, Seeding
+│   │   ├── DependencyInjection.cs
+│   │   ├── Data/
+│   │   │   ├── ApplicationDbContext.cs
+│   │   │   └── DataSeeder.cs
+│   │   ├── Repositories/
+│   │   │   ├── EmployeeRepository.cs
+│   │   │   └── UserRepository.cs
+│   │   └── Migrations/
+│   │
+│   ├── EmployeeRegistry.UnitTests/
+│   └── EmployeeRegistry.IntegrationTests/
+│
+└── frontend/
+    └── employee-registry-ui/              # React 19 + Vite + Tailwind CSS
+        ├── index.html
+        ├── vite.config.ts
+        ├── tailwind.config.js
+        ├── Dockerfile
+        └── src/
+            ├── App.tsx
+            ├── main.tsx
+            ├── index.css
+            ├── pages/
+            │   ├── Login.tsx
+            │   ├── EmployeeList.tsx
+            │   ├── EmployeeDetails.tsx
+            │   └── EmployeeForm.tsx
+            ├── components/
+            │   ├── layout/Layout.tsx
+            │   └── ui/
+            │       ├── Button.tsx
+            │       └── Input.tsx
+            ├── context/
+            │   └── AuthContext.tsx
+            ├── services/
+            │   └── api.ts
+            └── types/
+```
+
+---
+
 ## Getting Started
 
 ### Prerequisites
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - [Node.js (LTS Version)](https://nodejs.org/)
 - [PostgreSQL Server](https://www.postgresql.org/)
 
@@ -77,4 +222,4 @@ Refer to [docs/DeploymentGuide.md](docs/DeploymentGuide.md) for step-by-step ins
 - **Global Error Handling**: Uncaught exceptions are globally handled natively by middleware to return a sanitized, consistent JSON response model across API ends avoiding leaky stacktraces.
 - **React Frontend**: State mapping is driven contextually (`AuthContext`). We use `react-hook-form` connected to `yup` for high performance frontend validation bridging cleanly with the backend `FluentValidation` requirements.
 
-Refer to `docs/SRS.md` for the Entity-Relationship (ER) diagram and precise technical limitations.
+Refer to [docs/SRS.md](docs/SRS.md) for the Entity-Relationship (ER) diagram and precise technical limitations.

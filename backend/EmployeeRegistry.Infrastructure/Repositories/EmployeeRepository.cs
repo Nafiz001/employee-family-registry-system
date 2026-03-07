@@ -30,7 +30,7 @@ public class EmployeeRepository : IEmployeeRepository
                 e.Department.ToLower().Contains(searchLower));
         }
 
-        return await query.OrderBy(e => e.Name).ToListAsync();
+        return await query.OrderBy(e => e.Id).ToListAsync();
     }
 
     public async Task<Employee?> GetByIdAsync(int id)

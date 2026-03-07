@@ -10,12 +10,12 @@ The **Employee & Family Registry System** is a business application designed to 
 
 ## 2. System Architecture
 The software consists of two main decoupled components:
-*   **Backend**: .NET 8 ASP.NET Core Web API following Clean Architecture (Domain, Application, Infrastructure, Api) and the Repository software pattern.
+*   **Backend**: .NET 10 ASP.NET Core Web API following Clean Architecture (Domain, Application, Infrastructure, Api) and the Repository software pattern.
 *   **Frontend**: React 19 SPA built with Vite and TypeScript, styled with Tailwind CSS v3.
 
 ### 2.1 Technologies
 *   **Database**: PostgreSQL
-*   **ORM**: Entity Framework Core 8
+*   **ORM**: Entity Framework Core 10
 *   **Auth**: JSON Web Tokens (JWT) + BCrypt Password Hashing
 *   **Frontend Data Fetching**: Axios
 

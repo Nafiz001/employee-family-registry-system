@@ -4,9 +4,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import api from '../services/api';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Trash2, Plus, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, ArrowLeft, User, Users as UsersIcon, Baby } from 'lucide-react';
 import { format } from 'date-fns';
 
 const schema = yup.object({
@@ -135,157 +133,238 @@ export const EmployeeForm: React.FC = () => {
     };
 
     if (isLoadingData) {
-        return <div className="p-8 text-center text-gray-500">Loading form data...</div>;
+        return (
+            <div className="flex justify-center items-center py-20">
+                <svg className="animate-spin h-7 w-7 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        );
     }
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
+            {/* Page header */}
             <div className="flex items-center gap-4">
-                <Button variant="secondary" onClick={() => navigate(-1)}>
-                    <ArrowLeft className="w-4 h-4 mr-2" />
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20 transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
                     Back
-                </Button>
-                <h1 className="text-2xl font-bold text-gray-900">
+                </button>
+                <h1 className="text-slate-900 text-xl sm:text-2xl font-black leading-tight">
                     {isEditMode ? 'Edit Employee' : 'Add New Employee'}
                 </h1>
             </div>
 
-            <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 divide-y divide-gray-200">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {globalError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
+                        {globalError}
+                    </div>
+                )}
 
-                    {globalError && (
-                        <div className="bg-red-50 text-red-700 p-4 rounded-md">
-                            {globalError}
+                {/* Personal Information */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="px-5 sm:px-6 py-4 border-b border-slate-100 bg-primary/5 flex items-center gap-2">
+                        <User className="h-5 w-5 text-primary" />
+                        <h2 className="text-slate-900 text-base font-bold">Personal Information</h2>
+                    </div>
+                    <div className="p-5 sm:p-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                            <FormField label="Full Name *" error={errors.name?.message}>
+                                <input
+                                    {...register('name')}
+                                    placeholder="e.g. John Doe"
+                                    className={fieldClass(!!errors.name)}
+                                />
+                            </FormField>
+                            <FormField label="NID (10 or 17 digits) *" error={errors.nid?.message}>
+                                <input
+                                    {...register('nid')}
+                                    placeholder="e.g. 1234567890"
+                                    disabled={isEditMode}
+                                    className={fieldClass(!!errors.nid, isEditMode)}
+                                />
+                            </FormField>
+                            <FormField label="Phone (+880...) *" error={errors.phone?.message}>
+                                <input
+                                    {...register('phone')}
+                                    placeholder="e.g. +8801712345678"
+                                    className={fieldClass(!!errors.phone)}
+                                />
+                            </FormField>
+                            <FormField label="Department *" error={errors.department?.message}>
+                                <input
+                                    {...register('department')}
+                                    placeholder="e.g. Engineering"
+                                    className={fieldClass(!!errors.department)}
+                                />
+                            </FormField>
+                            <FormField label="Basic Salary (BDT) *" error={errors.basicSalary?.message} className="sm:col-span-2">
+                                <input
+                                    type="number"
+                                    {...register('basicSalary')}
+                                    placeholder="e.g. 50000"
+                                    className={fieldClass(!!errors.basicSalary)}
+                                />
+                            </FormField>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Spouse Information */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="px-5 sm:px-6 py-4 border-b border-slate-100 bg-primary/5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <UsersIcon className="h-5 w-5 text-primary" />
+                            <h2 className="text-slate-900 text-base font-bold">Spouse Information</h2>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                id="hasSpouse"
+                                type="checkbox"
+                                {...register('hasSpouse')}
+                                className="h-4 w-4 text-primary focus:ring-primary/30 border-slate-300 rounded cursor-pointer"
+                            />
+                            <span className="text-sm text-slate-600 font-medium select-none">Has Spouse?</span>
+                        </label>
+                    </div>
+                    {hasSpouse ? (
+                        <div className="p-5 sm:p-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <FormField label="Spouse Name *" error={(errors.spouse as any)?.name?.message}>
+                                    <input
+                                        {...register('spouse.name' as any)}
+                                        placeholder="e.g. Jane Doe"
+                                        className={fieldClass(!!(errors.spouse as any)?.name)}
+                                    />
+                                </FormField>
+                                <FormField label="Spouse NID (10 or 17 digits) *" error={(errors.spouse as any)?.nid?.message}>
+                                    <input
+                                        {...register('spouse.nid' as any)}
+                                        placeholder="e.g. 1234567890"
+                                        className={fieldClass(!!(errors.spouse as any)?.nid)}
+                                    />
+                                </FormField>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="px-5 sm:px-6 py-4">
+                            <p className="text-sm text-slate-400 italic">Toggle "Has Spouse?" to add spouse details.</p>
                         </div>
                     )}
+                </div>
 
-                    {/* Personal Info */}
-                    <div className="space-y-6 py-2">
-                        <div>
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">Personal Information</h3>
+                {/* Children */}
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="px-5 sm:px-6 py-4 border-b border-slate-100 bg-primary/5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Baby className="h-5 w-5 text-primary" />
+                            <h2 className="text-slate-900 text-base font-bold">Children</h2>
                         </div>
-                        <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
-                            <Input
-                                label="Full Name *"
-                                {...register('name')}
-                                error={errors.name?.message}
-                            />
-                            <Input
-                                label="NID (10 or 17 digits) *"
-                                {...register('nid')}
-                                error={errors.nid?.message}
-                                disabled={isEditMode} // Cannot change NID once created typically
-                            />
-                            <Input
-                                label="Phone (+880...) *"
-                                {...register('phone')}
-                                error={errors.phone?.message}
-                            />
-                            <Input
-                                label="Department *"
-                                {...register('department')}
-                                error={errors.department?.message}
-                            />
-                            <Input
-                                label="Basic Salary (BDT) *"
-                                type="number"
-                                {...register('basicSalary')}
-                                error={errors.basicSalary?.message}
-                            />
-                        </div>
+                        <button
+                            type="button"
+                            onClick={() => appendChild({ name: '', dateOfBirth: '' })}
+                            className="flex items-center gap-1.5 rounded-lg h-9 px-3 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20 transition-colors"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Add Child
+                        </button>
                     </div>
-
-                    {/* Spouse Info */}
-                    <div className="space-y-6 pt-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">Spouse Information</h3>
-                            <div className="flex items-center">
-                                <input
-                                    id="hasSpouse"
-                                    type="checkbox"
-                                    {...register('hasSpouse')}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="hasSpouse" className="ml-2 block text-sm text-gray-900">
-                                    Has Spouse?
-                                </label>
-                            </div>
-                        </div>
-
-                        {hasSpouse && (
-                            <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2 bg-gray-50 p-4 rounded-md">
-                                <Input
-                                    label="Spouse Name *"
-                                    {...register('spouse.name' as any)}
-                                    error={(errors.spouse as any)?.name?.message}
-                                />
-                                <Input
-                                    label="Spouse NID (10 or 17 digits) *"
-                                    {...register('spouse.nid' as any)}
-                                    error={(errors.spouse as any)?.nid?.message}
-                                />
-                            </div>
+                    <div className="p-5 sm:p-6 space-y-4">
+                        {childrenFields.length === 0 && (
+                            <p className="text-sm text-slate-400 italic">No children added yet.</p>
                         )}
-                    </div>
-
-                    {/* Children Info */}
-                    <div className="space-y-6 pt-8">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">Children</h3>
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={() => appendChild({ name: '', dateOfBirth: '' })}
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Child
-                            </Button>
-                        </div>
-
                         {childrenFields.map((field, index) => (
-                            <div key={field.id} className="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-12 bg-gray-50 p-4 rounded-md items-start">
+                            <div key={field.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start bg-background-light rounded-lg p-4 border border-primary/5">
                                 <div className="sm:col-span-5">
-                                    <Input
-                                        label="Child's Name *"
-                                        {...register(`children.${index}.name`)}
-                                        error={errors.children?.[index]?.name?.message}
-                                    />
+                                    <FormField label="Child's Name *" error={errors.children?.[index]?.name?.message}>
+                                        <input
+                                            {...register(`children.${index}.name`)}
+                                            placeholder="e.g. Emily"
+                                            className={fieldClass(!!errors.children?.[index]?.name)}
+                                        />
+                                    </FormField>
                                 </div>
                                 <div className="sm:col-span-5">
-                                    <Input
-                                        label="Date of Birth *"
-                                        type="date"
-                                        {...register(`children.${index}.dateOfBirth`)}
-                                        error={errors.children?.[index]?.dateOfBirth?.message}
-                                    />
+                                    <FormField label="Date of Birth *" error={errors.children?.[index]?.dateOfBirth?.message}>
+                                        <input
+                                            type="date"
+                                            {...register(`children.${index}.dateOfBirth`)}
+                                            className={fieldClass(!!errors.children?.[index]?.dateOfBirth)}
+                                        />
+                                    </FormField>
                                 </div>
-                                <div className="sm:col-span-2 pt-6 flex justify-end">
-                                    <Button
+                                <div className="sm:col-span-2 flex sm:justify-end sm:pt-6">
+                                    <button
                                         type="button"
-                                        variant="danger"
                                         onClick={() => removeChild(index)}
-                                        className="w-full sm:w-auto"
+                                        className="flex items-center gap-1.5 rounded-lg h-10 px-3 bg-rose-50 text-rose-600 text-sm font-medium hover:bg-rose-100 transition-colors"
                                     >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sm:hidden">Remove</span>
+                                    </button>
                                 </div>
                             </div>
                         ))}
-                        {childrenFields.length === 0 && (
-                            <p className="text-sm text-gray-500 italic">No children added.</p>
-                        )}
                     </div>
+                </div>
 
-                    <div className="pt-8 flex justify-end">
-                        <Button type="button" variant="secondary" onClick={() => navigate(-1)} className="mr-3">
-                            Cancel
-                        </Button>
-                        <Button type="submit" isLoading={isSubmitting}>
-                            {isEditMode ? 'Save Changes' : 'Create Employee'}
-                        </Button>
-                    </div>
-                </form>
-            </div>
+                {/* Form Actions */}
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2 pb-6">
+                    <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        className="flex items-center justify-center gap-2 rounded-lg h-11 px-5 bg-white text-slate-700 border border-slate-200 text-sm font-bold hover:bg-slate-50 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex items-center justify-center gap-2 rounded-lg h-11 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting ? (
+                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : null}
+                        {isEditMode ? 'Save Changes' : 'Create Employee'}
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };
+
+// Helper sub-components
+interface FormFieldProps {
+    label: string;
+    error?: string;
+    children: React.ReactNode;
+    className?: string;
+}
+
+function FormField({ label, error, children, className = '' }: FormFieldProps) {
+    return (
+        <div className={`flex flex-col gap-1.5 ${className}`}>
+            <label className="text-sm font-semibold text-slate-700">{label}</label>
+            {children}
+            {error && <p className="text-xs text-rose-600 mt-0.5">{error}</p>}
+        </div>
+    );
+}
+
+function fieldClass(hasError: boolean, disabled = false) {
+    return [
+        'w-full h-11 px-4 rounded-lg border text-sm outline-none transition-all',
+        'placeholder:text-slate-400 text-slate-900',
+        hasError ? 'border-rose-400 focus:ring-2 focus:ring-rose-200' : 'border-slate-200 focus:ring-2 focus:ring-primary/30 focus:border-primary',
+        disabled ? 'bg-slate-100 cursor-not-allowed text-slate-500' : 'bg-white',
+    ].join(' ');
+}

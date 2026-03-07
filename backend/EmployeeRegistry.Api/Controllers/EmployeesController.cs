@@ -80,6 +80,7 @@ public class EmployeesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<EmployeeDto>> Update(int id, [FromBody] UpdateEmployeeDto dto)
     {
+        dto.Id = id;
         var validationResult = await _updateValidator.ValidateAsync(dto);
         if (!validationResult.IsValid)
         {
