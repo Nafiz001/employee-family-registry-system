@@ -73,4 +73,21 @@ public class EmployeeRepository : IEmployeeRepository
 
         return await query.AnyAsync();
     }
+
+    public async Task<bool> NidExistsGloballyAsync(string nid, int? excludeEmployeeId = null)
+    {
+        // Check Employees table (excluding the employee being updated)
+        var employeeQuery = _context.Employees.Where(e => e.NID == nid);
+        if (excludeEmployeeId.HasValue)
+            employeeQuery = employeeQuery.Where(e => e.Id != excludeEmployeeId.Value);
+
+        if (await employeeQuery.AnyAsync()) return true;
+
+        // Check Spouses table (excluding the spouse belonging to the employee being updated)
+        var spouseQuery = _context.Spouses.Where(s => s.NID == nid);
+        if (excludeEmployeeId.HasValue)
+            spouseQuery = spouseQuery.Where(s => s.EmployeeId != excludeEmployeeId.Value);
+
+        return await spouseQuery.AnyAsync();
+    }
 }

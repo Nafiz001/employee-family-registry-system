@@ -15,8 +15,8 @@ public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeDto>
         RuleFor(x => x.NID)
             .NotEmpty().WithMessage("NID is required.")
             .Matches(@"^(\d{10}|\d{17})$").WithMessage("NID must be exactly 10 or 17 digits.")
-            .MustAsync(async (nid, cancellation) => !await repository.NidExistsAsync(nid))
-            .WithMessage("An employee with this NID already exists.");
+            .MustAsync(async (nid, cancellation) => !await repository.NidExistsGloballyAsync(nid))
+            .WithMessage("This NID is already in use by an employee or spouse.");
 
         RuleFor(x => x.Phone)
             .NotEmpty().WithMessage("Phone is required.")
@@ -60,7 +60,9 @@ public class UpdateEmployeeValidator : AbstractValidator<UpdateEmployeeDto>
 
         RuleFor(x => x.NID)
             .NotEmpty().WithMessage("NID is required.")
-            .Matches(@"^(\d{10}|\d{17})$").WithMessage("NID must be exactly 10 or 17 digits.");
+            .Matches(@"^(\d{10}|\d{17})$").WithMessage("NID must be exactly 10 or 17 digits.")
+            .MustAsync(async (dto, nid, cancellation) => !await repository.NidExistsGloballyAsync(nid, dto.Id))
+            .WithMessage("This NID is already in use by an employee or spouse.");
 
         RuleFor(x => x.Phone)
             .NotEmpty().WithMessage("Phone is required.")
@@ -80,6 +82,8 @@ public class UpdateEmployeeValidator : AbstractValidator<UpdateEmployeeDto>
 
             RuleFor(x => x.Spouse!.NID)
                 .Matches(@"^(\d{10}|\d{17})$").WithMessage("Spouse NID must be exactly 10 or 17 digits.")
+                .MustAsync(async (dto, nid, cancellation) => !await repository.NidExistsGloballyAsync(nid, dto.Id))
+                .WithMessage("This NID is already in use by an employee or spouse.")
                 .When(x => !string.IsNullOrEmpty(x.Spouse?.NID));
         });
 

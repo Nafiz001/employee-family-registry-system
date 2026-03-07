@@ -10,4 +10,5 @@ public interface IEmployeeRepository
     Task<Employee> UpdateAsync(Employee employee);
     Task<bool> DeleteAsync(int id);
     Task<bool> NidExistsAsync(string nid, int? excludeId = null);
+    Task<bool> NidExistsGloballyAsync(string nid, int? excludeEmployeeId = null);
 }

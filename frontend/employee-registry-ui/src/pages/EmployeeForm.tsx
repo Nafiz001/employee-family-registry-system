@@ -120,9 +120,12 @@ export const EmployeeForm: React.FC = () => {
             }
             navigate('/');
         } catch (err: any) {
-            if (err.response?.data?.errors) {
-                // Backend validation errors
-                const backendErrors = Object.values(err.response.data.errors).flat().join(', ');
+            const errors = err.response?.data?.errors;
+            if (errors) {
+                // Backend returns errors as array of { field, error } objects
+                const backendErrors = Array.isArray(errors)
+                    ? errors.map((e: any) => e.error ?? e.message ?? String(e)).join(', ')
+                    : Object.values(errors).flat().join(', ');
                 setGlobalError(backendErrors);
             } else if (err.response?.data?.message) {
                 setGlobalError(err.response.data.message);
